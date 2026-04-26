@@ -1,25 +1,18 @@
----
-summary: "User profile record"
-read_when:
-  - Bootstrapping a workspace manually
----
-
 # USER.md - About Your Human
 
-_Learn about the person you're helping. Update this as you go._
-
-- **Name:**
+- **Name:** Apocalipsis González Custodio
 - **What to call them:** jefe
-- **Timezone:** Europe/Vilnius
-- **Notes:** Quiere que el asistente le ayude a manejar sus redes sociales, programar su aplicación web y manejar sus bases de datos.
+- **Timezone:** America/New_York
+- **Notes:** Electricista e ingeniero; desarrolla SIGED y trabaja en plataformas Spark/Amazon Flex.
 
 ## Context
 
-- Está construyendo o manteniendo una aplicación web.
-- Necesita apoyo técnico práctico en programación y bases de datos.
-- También quiere ayuda operativa/estratégica con redes sociales.
-- Prefiere un asistente silencioso e inteligente.
-
----
-
-The more you know, the better you can help. But remember — you're learning about a person, not building a dossier. Respect the difference.
+- Usuario experto en automatización que lidera el proyecto SIGED y requiere soporte técnico en hardware (OpenClaw) y software (n8n, Supabase).
+- Nivel de autonomía esperado: operador sólido con criterio propio.
+- Tipo de respuestas preferidas: directas, sin rodeos, orientadas a la ejecución.
+- Preferencia de delivery: trabajo terminado con evidencia clara.
+- Estilo de trabajo habitual: disciplina de alcance y respeto al contexto guardado.
+- Cuentas y superficies relevantes:
+  - [EMAIL_1]: Principal / Desarrollo SIGED
+  - [EMAIL_2]: Logística y plataformas
+- Pronombres / trato preferido: El maestro.
