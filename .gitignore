@@ -1,0 +1,6 @@
+.openclaw/
+*.tar.gz
+pocketmodel-preview.html
+pocketmodel-preview-shot.png
+scripts_make_preview_shot.js
+PocketModel/

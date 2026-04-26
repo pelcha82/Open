@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>PocketModel Web</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">⚡ PocketModel Web</div>
+        <p class="muted">Modelo local-first en navegador.</p>
+      </div>
+
+      <section class="panel">
+        <h3>Modelo</h3>
+        <label>Modo</label>
+        <select id="modeSelect">
+          <option value="mock">Mock local</option>
+          <option value="webllm">WebLLM / navegador</option>
+        </select>
+
+        <label>Nombre del modelo</label>
+        <input id="modelName" value="PocketModel Local" />
+
+        <label>Temperature</label>
+        <input id="temperature" type="range" min="0" max="1.5" step="0.1" value="0.7" />
+        <div class="value-row"><span>Actual</span><span id="temperatureValue">0.7</span></div>
+
+        <label>Max tokens</label>
+        <input id="maxTokens" type="number" min="64" max="4096" step="64" value="512" />
+
+        <div class="button-row">
+          <button id="loadModelBtn" class="primary">Cargar modelo</button>
+          <button id="stopModelBtn" class="ghost">Detener</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h3>API local</h3>
+        <label>Endpoint</label>
+        <input id="apiEndpoint" value="/v1/chat/completions" />
+        <label>Token</label>
+        <input id="apiToken" value="pm_web_demo_token" />
+        <div class="button-row">
+          <button id="toggleApiBtn" class="primary">Activar API</button>
+          <button id="copyConfigBtn" class="ghost">Copiar config</button>
+        </div>
+      </section>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1>PocketModel Web</h1>
+          <p class="muted">Interfaz web para correr el modelo desde el navegador del teléfono.</p>
+        </div>
+        <div class="status-cluster">
+          <span id="modelStatus" class="pill idle">Modelo detenido</span>
+          <span id="apiStatus" class="pill idle">API apagada</span>
+        </div>
+      </header>
+
+      <section class="grid">
+        <div class="card chat-card">
+          <div class="card-header">
+            <h2>Prueba</h2>
+            <span id="metrics">0 tokens · 0.0s</span>
+          </div>
+          <div id="chatLog" class="chat-log"></div>
+          <div class="composer">
+            <textarea id="promptInput" placeholder="Escribe un prompt..."></textarea>
+            <div class="button-row end">
+              <button id="clearChatBtn" class="ghost">Limpiar</button>
+              <button id="sendPromptBtn" class="primary">Enviar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="card">
+            <div class="card-header">
+              <h2>Estado</h2>
+            </div>
+            <div class="kv"><span>Modelo</span><strong id="modelValue">PocketModel Local</strong></div>
+            <div class="kv"><span>Modo</span><strong id="modeValue">mock</strong></div>
+            <div class="kv"><span>RAM estimada</span><strong id="ramValue">1.2 GB</strong></div>
+            <div class="kv"><span>Última latencia</span><strong id="latencyValue">0.0s</strong></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Rutas</h2>
+            </div>
+            <pre class="routes">GET /health
+GET /v1/models
+POST /v1/chat/completions</pre>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Logs</h2>
+            </div>
+            <div id="logBox" class="log-box"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
