@@ -41,15 +41,16 @@
       </section>
 
       <section class="panel">
-        <h3>API local</h3>
+        <h3>Bridge remoto</h3>
         <label>Endpoint</label>
         <input id="apiEndpoint" value="/v1/chat/completions" />
         <label>Token</label>
-        <input id="apiToken" value="pm_web_demo_token" />
+        <input id="apiToken" value="" placeholder="Se genera o reutiliza al activar" />
         <div class="button-row">
-          <button id="toggleApiBtn" class="primary">Activar API</button>
+          <button id="toggleApiBtn" class="primary">Activar bridge</button>
           <button id="copyConfigBtn" class="ghost">Copiar config</button>
         </div>
+        <p class="muted">Mantén esta página abierta para que el backend pueda reenviar prompts al modelo del navegador.</p>
       </section>
     </aside>
 
@@ -98,6 +99,9 @@
               <h2>Rutas</h2>
             </div>
             <pre class="routes">GET /health
+POST /v1/session/register
+GET /v1/session/events?token=...
+POST /v1/session/result
 GET /v1/models
 POST /v1/chat/completions</pre>
           </div>

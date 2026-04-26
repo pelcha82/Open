@@ -58,6 +58,11 @@ function setBusy(isBusy) {
   els.sendPromptBtn.disabled = isBusy;
   els.loadModelBtn.textContent = isBusy ? 'Cargando...' : 'Cargar modelo';
 }
+function updateApiFields() {
+  const info = api.getConnectionInfo();
+  els.apiEndpoint.value = info.endpoint;
+  els.apiToken.value = info.token;
+}
 
 els.temperature.addEventListener('input', () => {
   els.temperatureValue.textContent = els.temperature.value;
@@ -93,23 +98,38 @@ els.stopModelBtn.addEventListener('click', async () => {
   log('Modelo detenido');
 });
 
-els.toggleApiBtn.addEventListener('click', () => {
+els.toggleApiBtn.addEventListener('click', async () => {
   if (api.active) {
     api.stop();
-    setApiStatus(false, 'API apagada');
-    els.toggleApiBtn.textContent = 'Activar API';
-  } else {
-    api.start();
-    setApiStatus(true, 'API virtual activa');
-    els.toggleApiBtn.textContent = 'Detener API';
+    setApiStatus(false, 'Bridge apagado');
+    els.toggleApiBtn.textContent = 'Activar bridge';
+    updateApiFields();
+    return;
+  }
+
+  try {
+    const bridgeBaseUrl = window.prompt('Bridge URL (backend)', window.location.origin) || window.location.origin;
+    const token = els.apiToken.value.trim();
+    const model = els.modelName.value.trim() || 'Llama-3.2-1B-Instruct-q4f32_1-MLC';
+    const mode = els.modeSelect.value;
+    await api.start({ bridgeBaseUrl, token, model, mode });
+    setApiStatus(true, 'Bridge remoto activo');
+    els.toggleApiBtn.textContent = 'Detener bridge';
+    updateApiFields();
+  } catch (err) {
+    setApiStatus(false, 'Error activando bridge');
+    log(`Error activando bridge: ${err.message}`);
+    addMessage('assistant', `Error activando bridge: ${err.message}`);
   }
 });
 
 els.copyConfigBtn.addEventListener('click', async () => {
+  const info = api.getConnectionInfo();
   const payload = JSON.stringify({
-    endpoint: els.apiEndpoint.value,
-    token: els.apiToken.value,
-    model: els.modelName.value
+    endpoint: info.endpoint,
+    token: info.token,
+    model: els.modelName.value,
+    exampleCurl: `curl -X POST ${info.endpoint} -H \"Authorization: Bearer ${info.token}\" -H \"Content-Type: application/json\" -d '{\"messages\":[{\"role\":\"user\",\"content\":\"Hola\"}]}'`
   }, null, 2);
   await navigator.clipboard.writeText(payload);
   log('Configuración copiada al portapapeles');
@@ -147,6 +167,7 @@ addMessage('assistant', webgpuAvailable
   ? 'PocketModel Web listo. Puedes probar mock o intentar WebLLM si tu navegador soporta WebGPU.'
   : 'PocketModel Web listo. Tu navegador actual no expone WebGPU; usa mock o prueba Safari/iOS compatible para modo real.');
 log(`Aplicación inicializada. WebGPU: ${webgpuAvailable ? 'sí' : 'no'}`);
+updateApiFields();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
