@@ -19,6 +19,7 @@ const els = {
   modelValue: $('#modelValue'),
   modeValue: $('#modeValue'),
   ramValue: $('#ramValue'),
+  webgpuValue: $('#webgpuValue'),
   latencyValue: $('#latencyValue'),
   metrics: $('#metrics'),
   chatLog: $('#chatLog'),
@@ -28,12 +29,13 @@ const els = {
   logBox: $('#logBox')
 };
 
-const runtime = new PocketModelRuntime();
 const log = message => {
   const line = document.createElement('div');
   line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
   els.logBox.prepend(line);
 };
+
+const runtime = new PocketModelRuntime(log);
 const api = new LocalAPIController(runtime, log);
 
 function setModelStatus(ok, text) {
@@ -51,23 +53,37 @@ function addMessage(role, content) {
   els.chatLog.appendChild(div);
   els.chatLog.scrollTop = els.chatLog.scrollHeight;
 }
+function setBusy(isBusy) {
+  els.loadModelBtn.disabled = isBusy;
+  els.sendPromptBtn.disabled = isBusy;
+  els.loadModelBtn.textContent = isBusy ? 'Cargando...' : 'Cargar modelo';
+}
 
 els.temperature.addEventListener('input', () => {
   els.temperatureValue.textContent = els.temperature.value;
 });
 
 els.loadModelBtn.addEventListener('click', async () => {
+  setBusy(true);
   try {
     const mode = els.modeSelect.value;
-    const modelName = els.modelName.value.trim() || 'PocketModel Local';
-    const result = await runtime.load({ mode, modelName });
+    const modelName = els.modelName.value.trim() || 'Llama-3.2-1B-Instruct-q4f32_1-MLC';
+    const result = await runtime.load({
+      mode,
+      modelName,
+      onProgress: text => setModelStatus(false, text)
+    });
     els.modelValue.textContent = modelName;
     els.modeValue.textContent = mode;
     els.ramValue.textContent = result.ramEstimate;
-    setModelStatus(true, `Modelo cargado (${mode})`);
+    setModelStatus(true, `Modelo cargado (${result.backend})`);
     log(`Modelo cargado: ${modelName} en modo ${mode}`);
   } catch (err) {
+    setModelStatus(false, 'Error cargando modelo');
     log(`Error cargando modelo: ${err.message}`);
+    addMessage('assistant', `Error cargando modelo: ${err.message}`);
+  } finally {
+    setBusy(false);
   }
 });
 
@@ -125,8 +141,12 @@ els.clearChatBtn.addEventListener('click', () => {
   log('Chat limpiado');
 });
 
-addMessage('assistant', 'PocketModel Web listo. Carga el modelo y prueba un prompt.');
-log('Aplicación inicializada');
+const webgpuAvailable = runtime.supportsWebGPU();
+els.webgpuValue.textContent = webgpuAvailable ? 'Disponible' : 'No disponible';
+addMessage('assistant', webgpuAvailable
+  ? 'PocketModel Web listo. Puedes probar mock o intentar WebLLM si tu navegador soporta WebGPU.'
+  : 'PocketModel Web listo. Tu navegador actual no expone WebGPU; usa mock o prueba Safari/iOS compatible para modo real.');
+log(`Aplicación inicializada. WebGPU: ${webgpuAvailable ? 'sí' : 'no'}`);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
